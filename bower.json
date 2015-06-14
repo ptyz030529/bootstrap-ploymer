@@ -1,0 +1,25 @@
+{
+  "name": "bootstrap-ploymer",
+  "version": "0.0.1",
+  "homepage": "https://github.com/ptyz030529/bootstrap-ploymer",
+  "authors": [
+    "Jimba<429000366@qq.com>"
+  ],
+  "description": "bootstrap-ploymer",
+  "keywords": [
+    "bootstrap",
+    "ploymer"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "git@github.com:twbs/bootstrap.git#master",
+    "polymer": "Polymer/polymer"
+  }
+}

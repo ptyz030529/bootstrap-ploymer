@@ -1,0 +1,29 @@
+{
+  "name": "bootstrap-ploymer",
+  "version": "0.0.1",
+  "description": "bootstrap ploymer",
+  "main": "glfx.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ptyz030529/bootstrap-ploymer.git"
+  },
+  "author": "Jimba<429000366@qq.com>",
+  "license": "MIT",
+  "keywords": [
+    "bootstrap",
+    "ploymer"
+  ],
+  "bugs": {
+    "url": "https://github.com/ptyz030529/bootstrap-ploymer/issues"
+  },
+  "devDependencies" : {
+    "gulp" : "*",
+    "gulp-copy" : "gulp-copy"
+  }
+}
