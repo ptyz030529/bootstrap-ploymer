@@ -1,0 +1,83 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'c:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@1.4.14
+3 info using node@v0.10.29
+4 verbose readDependencies using package.json deps
+5 verbose install where, deps [ 'c:\\wamp\\www\\bootstrap-ploymer', [ 'gulp', 'gulp-copy' ] ]
+6 info preinstall bootstrap-ploymer@0.0.1
+7 verbose readDependencies using package.json deps
+8 verbose already installed skipping gulp@* c:\wamp\www\bootstrap-ploymer
+9 verbose cache add [ 'gulp-copy@gulp-copy', null ]
+10 verbose cache add name=undefined spec="gulp-copy@gulp-copy" args=["gulp-copy@gulp-copy",null]
+11 verbose parsed url { protocol: null,
+11 verbose parsed url   slashes: null,
+11 verbose parsed url   auth: null,
+11 verbose parsed url   host: null,
+11 verbose parsed url   port: null,
+11 verbose parsed url   hostname: null,
+11 verbose parsed url   hash: null,
+11 verbose parsed url   search: null,
+11 verbose parsed url   query: null,
+11 verbose parsed url   pathname: 'gulp-copy@gulp-copy',
+11 verbose parsed url   path: 'gulp-copy@gulp-copy',
+11 verbose parsed url   href: 'gulp-copy@gulp-copy' }
+12 verbose cache add name="gulp-copy" spec="gulp-copy" args=["gulp-copy","gulp-copy"]
+13 verbose parsed url { protocol: null,
+13 verbose parsed url   slashes: null,
+13 verbose parsed url   auth: null,
+13 verbose parsed url   host: null,
+13 verbose parsed url   port: null,
+13 verbose parsed url   hostname: null,
+13 verbose parsed url   hash: null,
+13 verbose parsed url   search: null,
+13 verbose parsed url   query: null,
+13 verbose parsed url   pathname: 'gulp-copy',
+13 verbose parsed url   path: 'gulp-copy',
+13 verbose parsed url   href: 'gulp-copy' }
+14 verbose addNamed [ 'gulp-copy', 'gulp-copy' ]
+15 verbose addNamed [ null, null ]
+16 silly lockFile a39b164c-gulp-copy-gulp-copy gulp-copy@gulp-copy
+17 verbose lock gulp-copy@gulp-copy C:\Users\Administrator\AppData\Roaming\npm-cache\a39b164c-gulp-copy-gulp-copy.lock
+18 info addNameTag [ 'gulp-copy', 'gulp-copy' ]
+19 verbose url raw gulp-copy
+20 verbose url resolving [ 'https://registry.npmjs.org/', './gulp-copy' ]
+21 verbose url resolved https://registry.npmjs.org/gulp-copy
+22 info trying registry request attempt 1 at 21:42:44
+23 verbose etag "CA8E5OWN3GIFBYJ7BPL81HV61"
+24 http GET https://registry.npmjs.org/gulp-copy
+25 info retry will retry, error on last attempt: Error: getaddrinfo EAGAIN
+26 info trying registry request attempt 2 at 21:42:58
+27 verbose etag "CA8E5OWN3GIFBYJ7BPL81HV61"
+28 http GET https://registry.npmjs.org/gulp-copy
+29 http 304 https://registry.npmjs.org/gulp-copy
+30 silly registry.get cb [ 304,
+30 silly registry.get   { date: 'Tue, 16 Jun 2015 13:43:09 GMT',
+30 silly registry.get     via: '1.1 varnish',
+30 silly registry.get     'cache-control': 'max-age=60',
+30 silly registry.get     etag: '"CA8E5OWN3GIFBYJ7BPL81HV61"',
+30 silly registry.get     age: '0',
+30 silly registry.get     connection: 'keep-alive',
+30 silly registry.get     'x-served-by': 'cache-sjc3129-SJC',
+30 silly registry.get     'x-cache': 'MISS',
+30 silly registry.get     'x-cache-hits': '0',
+30 silly registry.get     'x-timer': 'S1434462189.344514,VS0,VE88',
+30 silly registry.get     vary: 'Accept' } ]
+31 verbose etag gulp-copy from cache
+32 silly lockFile a39b164c-gulp-copy-gulp-copy gulp-copy@gulp-copy
+33 silly lockFile a39b164c-gulp-copy-gulp-copy gulp-copy@gulp-copy
+34 error notarget No compatible version found: gulp-copy@'gulp-copy'
+34 error notarget Valid install targets:
+34 error notarget ["0.0.2","0.0.2"]
+34 error notarget
+34 error notarget This is most likely not a problem with npm itself.
+34 error notarget In most cases you or one of your dependencies are requesting
+34 error notarget a package version that doesn't exist.
+35 error System Windows_NT 6.1.7601
+36 error command "c:\\Program Files\\nodejs\\node.exe" "c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+37 error cwd c:\wamp\www\bootstrap-ploymer
+38 error node -v v0.10.29
+39 error npm -v 1.4.14
+40 error code ETARGET
+41 verbose exit [ 1, true ]

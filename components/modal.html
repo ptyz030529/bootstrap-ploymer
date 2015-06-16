@@ -31,40 +31,32 @@
         }
       },
       listeners : {
-        'transitionend' : 'test'
+        'transitionend' : 'handleTransition'
       },
 
-      test : function(e){
+      handleTransition : function(e){
         console.log(e);
-        console.log('hello');
-      },
-      backdrop : function(callback){
-        var self = this;
-        var animate = this.classList.contains('fade') ? 'fade' : '';
 
-        if( this.shown ){
-          this.backdrop = document.createElement('div').classList.add('modal-backdrop' + animate);
-          this.backdrop.appendTo(document.body);
-        }
       },
+      
 
       created : function(){
         this.classList.add('modal','fade');
-        this.style.display = 'block';
+        this.style.display = 'none';
       },
+
       show : function(){
         this.shown = true;
-        document.body.classList.add('modal-open');
+        /*document.body.classList.add('modal-open');
         this.classList.add('in');
         this.style.display = 'block';
-        this.setAttribute('aria-hidden', false);
+        this.setAttribute('aria-hidden', false);*/
 
 
-        var backdrop = document.createElement('div');
-        backdrop.classList.add('modal-backdrop', 'fade', 'in');
-        document.body.appendChild(backdrop);
+        this._showBackdrop();
 
       },
+
       hide : function(){
         this.shown = false;
         document.body.classList.remove('modal-open');
@@ -72,8 +64,25 @@
         this.style.display = 'none';
         this.setAttribute('aria-hidden', true);
       },
+
       toggle : function(){
         return this.shown ? this.hide() : this.show();
+      },
+      
+      _showBackdrop : function(callback){
+        var self = this;
+        var animate = this.classList.contains('fade') ? 'fade' : '';
+
+        if( this.shown && this.backdrop){
+          this.backdrop = document.createElement('div');
+          this.backdrop.classList.add('modal-backdrop', animate);
+          document.body.appendChild(this.backdrop);
+
+          this.backdrop.offsetWidth;
+          this.backdrop.classList.add('in');
+          console.dir(this);
+         
+        }
       },
 
       _measureScrollbar :function () { // thx walsh
@@ -84,7 +93,6 @@
         this.$body[0].removeChild(scrollDiv)
         return scrollbarWidth
       }
-
     });
   </script>
 </dom-module>
