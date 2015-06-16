@@ -20,9 +20,71 @@
     // element registration
     Polymer({
       is: "bs-modal",
+      properties : {
+        shown : {
+          type: Boolean,
+          value : false
+        },
+        backdrop : {
+          type : Boolean,
+          value : true
+        }
+      },
+      listeners : {
+        'transitionend' : 'test'
+      },
+
+      test : function(e){
+        console.log(e);
+        console.log('hello');
+      },
+      backdrop : function(callback){
+        var self = this;
+        var animate = this.classList.contains('fade') ? 'fade' : '';
+
+        if( this.shown ){
+          this.backdrop = document.createElement('div').classList.add('modal-backdrop' + animate);
+          this.backdrop.appendTo(document.body);
+        }
+      },
+
       created : function(){
-        this.classList.add('modal');
+        this.classList.add('modal','fade');
+        this.style.display = 'block';
+      },
+      show : function(){
+        this.shown = true;
+        document.body.classList.add('modal-open');
+        this.classList.add('in');
+        this.style.display = 'block';
+        this.setAttribute('aria-hidden', false);
+
+
+        var backdrop = document.createElement('div');
+        backdrop.classList.add('modal-backdrop', 'fade', 'in');
+        document.body.appendChild(backdrop);
+
+      },
+      hide : function(){
+        this.shown = false;
+        document.body.classList.remove('modal-open');
+        this.classList.remove('in');
+        this.style.display = 'none';
+        this.setAttribute('aria-hidden', true);
+      },
+      toggle : function(){
+        return this.shown ? this.hide() : this.show();
+      },
+
+      _measureScrollbar :function () { // thx walsh
+        var scrollDiv = document.createElement('div')
+        scrollDiv.className = 'modal-scrollbar-measure'
+        this.$body.append(scrollDiv)
+        var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
+        this.$body[0].removeChild(scrollDiv)
+        return scrollbarWidth
       }
+
     });
   </script>
 </dom-module>
@@ -35,7 +97,9 @@
   </style>
   <template>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">Modal title</h4>
+    <h4 class="modal-title">
+      <content></content>
+    </h4>
   </template>
   <script>
     // element registration
@@ -57,7 +121,7 @@
   </style>
   <template>
     <div class="modal-body">
-      <p>One fine body&hellip;</p>
+      <content></content>
     </div>
   </template>
   <script>

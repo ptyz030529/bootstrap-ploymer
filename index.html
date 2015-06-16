@@ -5,10 +5,15 @@
     <script src="assets/vendor/webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="components/modal.html">
   </head>
-  <body>
-    <bs-modal>
-      <bs-modal-header></bs-modal-header>
-      <bs-modal-body></bs-modal-body>
+  <body onclick="document.getElementById('modal').show()">
+    <button onclick="document.getElementById('modal').show()">Click Me</button>
+    <bs-modal id="modal">
+      <bs-modal-header>
+        Modal title1
+      </bs-modal-header>
+      <bs-modal-body>
+        One fine body&hellip;
+      </bs-modal-body>
     </bs-modal>
   </body>
 </html>
