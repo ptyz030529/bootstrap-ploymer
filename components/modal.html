@@ -8,7 +8,7 @@
       <div class="modal-content">
         <content></content>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" on-click="handleClickClose">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
@@ -31,60 +31,112 @@
         }
       },
       listeners : {
-        'transitionend' : 'handleTransition'
+        'click' : 'hide'
       },
 
-      handleTransition : function(e){
-        console.log(e);
-
-      },
-      
-
-      created : function(){
+      ready : function(){
         this.classList.add('modal','fade');
         this.style.display = 'none';
+
+        this.$dialog              = this.$$('.modal-dialog');
+        this.$backdrop            = null;
+        this.ignoreBackdropClick  = false;
       },
 
       show : function(){
+        var self = this;
+
         this.shown = true;
-        /*document.body.classList.add('modal-open');
-        this.classList.add('in');
-        this.style.display = 'block';
-        this.setAttribute('aria-hidden', false);*/
 
+        document.body.classList.add('modal-open');
+        
+        
+        this._backdrop(function(){
+          self.offsetWidth;// force reflow
+          
+          self.style.display = 'block';
+          self.scrollTop = 100;
 
-        this._showBackdrop();
+          self.classList.add('in');
+          self.setAttribute('aria-hidden', false);
+        });
 
       },
 
       hide : function(){
+        var self = this;
+
         this.shown = false;
-        document.body.classList.remove('modal-open');
+
+
         this.classList.remove('in');
+        
+        var transitionendHandle = function(e){
+          self.hideModal();
+          self.$dialog.removeEventListener('transitionend', transitionendHandle);
+        };
+
+        this.$dialog.addEventListener('transitionend', transitionendHandle);
+         
+        // this.setAttribute('aria-hidden', true);
+      },
+
+      hideModal : function(){
         this.style.display = 'none';
-        this.setAttribute('aria-hidden', true);
+        this._backdrop(function(){
+          document.body.classList.remove('modal-open');
+        });
       },
 
       toggle : function(){
         return this.shown ? this.hide() : this.show();
       },
-      
-      _showBackdrop : function(callback){
-        var self = this;
-        var animate = this.classList.contains('fade') ? 'fade' : '';
 
-        if( this.shown && this.backdrop){
-          this.backdrop = document.createElement('div');
-          this.backdrop.classList.add('modal-backdrop', animate);
-          document.body.appendChild(this.backdrop);
-
-          this.backdrop.offsetWidth;
-          this.backdrop.classList.add('in');
-          console.dir(this);
-         
-        }
+      handleClickClose : function(e){
+        this.hide();
+        e.stopPropagation();
       },
 
+
+      _backdrop : function(callback){
+        var self = this;
+        var animate = this.classList.contains('fade') ? 'fade' : '';
+        if( this.shown && this.backdrop){
+          this.$backdrop = document.createElement('div');
+          this.$backdrop.classList.add('modal-backdrop', animate);
+          document.body.appendChild(this.$backdrop);
+
+          this.$backdrop.offsetWidth;
+          this.$backdrop.classList.add('in');
+
+          var showHandle = function(){
+            self.$backdrop.removeEventListener('transitionend', showHandle);
+
+            if (!callback) return;
+            callback();
+          };
+      
+          this.$backdrop.addEventListener('transitionend', showHandle);
+         
+        }else if(!this.shown && this.$backdrop){
+          this.$backdrop.classList.remove('in');
+
+          var hideHandle = function(){
+            self.$backdrop.removeEventListener('transitionend',hideHandle);
+            self._removeBackdrop();
+            if (!callback) return;
+            callback();
+          };
+
+          this.$backdrop.addEventListener('transitionend',hideHandle);    
+        }else if(callback){
+            callback();
+        }
+      },
+      _removeBackdrop : function(){
+        this.$backdrop && this.$backdrop.remove();
+        this.$backdrop = null;
+      },
       _measureScrollbar :function () { // thx walsh
         var scrollDiv = document.createElement('div')
         scrollDiv.className = 'modal-scrollbar-measure'
@@ -104,7 +156,7 @@
     }
   </style>
   <template>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" on-click="clickClose"><span aria-hidden="true">&times;</span></button>
     <h4 class="modal-title">
       <content></content>
     </h4>
@@ -115,7 +167,12 @@
       is: "bs-modal-header",
       created : function(){
         this.classList.add('modal-header');
+      },
+      clickClose : function(e){
+        this.fire('clickClose');
+        e.stopPropagation();
       }
+      
     });
   </script>
 </dom-module>
