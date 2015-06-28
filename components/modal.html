@@ -8,7 +8,7 @@
       <div class="modal-content">
         <content></content>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal" on-click="handleClickClose">Close</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" on-click="_handleClickClose">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
@@ -28,10 +28,16 @@
         backdrop : {
           type : Boolean,
           value : true
+        },
+        keyboard : {
+          type : Boolean,
+          value : true
         }
       },
+
       listeners : {
-        'click' : 'hide'
+        'clickCloseIcon' : 'hide',
+        'keydown' : function(){console.log('asdasd')}
       },
 
       ready : function(){
@@ -41,16 +47,28 @@
         this.$dialog              = this.$$('.modal-dialog');
         this.$backdrop            = null;
         this.ignoreBackdropClick  = false;
-      },
+        this.scrollbarWidth       = 0;
+        this.originalBodyPad      = null;
 
+      },
+     
       show : function(){
         var self = this;
 
         this.shown = true;
 
+        this._checkScrollbar();
+        this._setScrollbar();
+
+
         document.body.classList.add('modal-open');
         
-        
+
+        this._escape();
+
+
+        this.$dialog.addEventListener('mousedown', this._ignoreBackdrop.bind(this));
+
         this._backdrop(function(){
           self.offsetWidth;// force reflow
           
@@ -68,23 +86,28 @@
 
         this.shown = false;
 
-
         this.classList.remove('in');
         
+        this.removeEventListener('click', this._clickModal);
+        this.removeEventListener('mouseup', this._checkMouseup)
+        this.$dialog.removeEventListener('mousedown', this._ignoreBackdrop);
+
         var transitionendHandle = function(e){
+          
           self.hideModal();
           self.$dialog.removeEventListener('transitionend', transitionendHandle);
         };
 
         this.$dialog.addEventListener('transitionend', transitionendHandle);
-         
-        // this.setAttribute('aria-hidden', true);
       },
 
       hideModal : function(){
+        var self = this;
+
         this.style.display = 'none';
         this._backdrop(function(){
           document.body.classList.remove('modal-open');
+          self._resetScrollbar();
         });
       },
 
@@ -92,7 +115,7 @@
         return this.shown ? this.hide() : this.show();
       },
 
-      handleClickClose : function(e){
+      _handleClickClose : function(e){
         this.hide();
         e.stopPropagation();
       },
@@ -106,10 +129,13 @@
           this.$backdrop.classList.add('modal-backdrop', animate);
           document.body.appendChild(this.$backdrop);
 
+          this.addEventListener('click',this._clickModal );
+
           this.$backdrop.offsetWidth;
           this.$backdrop.classList.add('in');
 
           var showHandle = function(){
+           
             self.$backdrop.removeEventListener('transitionend', showHandle);
 
             if (!callback) return;
@@ -119,31 +145,84 @@
           this.$backdrop.addEventListener('transitionend', showHandle);
          
         }else if(!this.shown && this.$backdrop){
-          this.$backdrop.classList.remove('in');
+          
 
           var hideHandle = function(){
+      
             self.$backdrop.removeEventListener('transitionend',hideHandle);
             self._removeBackdrop();
             if (!callback) return;
             callback();
           };
 
-          this.$backdrop.addEventListener('transitionend',hideHandle);    
+          this.$backdrop.addEventListener('transitionend',hideHandle);  
+          this.$backdrop.classList.remove('in');  
         }else if(callback){
             callback();
         }
       },
+
       _removeBackdrop : function(){
         this.$backdrop && this.$backdrop.remove();
         this.$backdrop = null;
       },
-      _measureScrollbar :function () { // thx walsh
-        var scrollDiv = document.createElement('div')
-        scrollDiv.className = 'modal-scrollbar-measure'
-        this.$body.append(scrollDiv)
-        var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
-        this.$body[0].removeChild(scrollDiv)
-        return scrollbarWidth
+
+       _ignoreBackdrop : function(e){
+        this.addEventListener('mouseup',this._checkMouseup);
+      },
+
+      _checkMouseup : function(e){
+        if(this !== e.target) this.ignoreBackdropClick = true;
+
+        this.removeEventListener('mouseup',this._checkMouseup);
+      },
+
+      _clickModal : function(){
+        if(this.ignoreBackdropClick){
+          this.ignoreBackdropClick = false;
+          return;
+        }
+
+        this.hide();
+      },
+      _measureScrollbar : function () { // thx walsh
+        var scrollDiv = document.createElement('div');
+        scrollDiv.className = 'modal-scrollbar-measure';
+        document.body.appendChild(scrollDiv);
+        var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+        scrollDiv.remove();
+        return scrollbarWidth;
+      },
+      _checkScrollbar : function(){
+         var fullWindowWidth = window.innerWidth;
+          if (!fullWindowWidth) { // workaround for missing window.innerWidth in IE8
+            var documentElementRect = document.documentElement.getBoundingClientRect();
+            fullWindowWidth = documentElementRect.right - Math.abs(documentElementRect.left);
+          }
+          this.bodyIsOverflowing = document.body.clientWidth < fullWindowWidth;
+          this.scrollbarWidth = this._measureScrollbar();
+      },
+      _setScrollbar : function () {
+        var bodyPad = parseInt((document.body.style.paddingRight || 0), 10);
+        this.originalBodyPad = document.body.style.paddingRight || '';
+        if (this.bodyIsOverflowing) document.body.style.paddingRight = bodyPad + this.scrollbarWidth;
+      },
+      _resetScrollbar : function () {
+        document.body.style.paddingRight = this.originalBodyPad;
+      },
+      _escape : function () {
+        var self = this;
+
+        var escapeHandle = function(e){
+          console.log('test');
+          e.which == 27 && self.hide();
+        }
+
+        if (this.shown && this.keyboard) {
+          this.addEventListener('keydown',escapeHandle);
+        } else if (!this.shown) {
+          this.removeEventListener('keydown',escapeHandle);
+        }
       }
     });
   </script>
@@ -169,7 +248,7 @@
         this.classList.add('modal-header');
       },
       clickClose : function(e){
-        this.fire('clickClose');
+        this.fire('clickCloseIcon');
         e.stopPropagation();
       }
       
