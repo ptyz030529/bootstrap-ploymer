@@ -9,7 +9,7 @@
         <content></content>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" on-click="_handleClickClose">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button id="save" type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
       <!-- end modal-content -->
@@ -36,11 +36,11 @@
       },
 
       listeners : {
-        'clickCloseIcon' : 'hide',
-        'keydown' : function(){console.log('asdasd')}
+        'clickCloseIcon' : 'hide'
       },
 
       ready : function(){
+        this.setAttribute('tabindex', -1);
         this.classList.add('modal','fade');
         this.style.display = 'none';
 
@@ -50,33 +50,46 @@
         this.scrollbarWidth       = 0;
         this.originalBodyPad      = null;
 
+        this.fire('loaded');
       },
      
       show : function(){
         var self = this;
+        this.fire('show');
 
         this.shown = true;
 
         this._checkScrollbar();
         this._setScrollbar();
-
-
         document.body.classList.add('modal-open');
         
-
         this._escape();
+        this._resize();
 
 
         this.$dialog.addEventListener('mousedown', this._ignoreBackdrop.bind(this));
 
         this._backdrop(function(){
-          self.offsetWidth;// force reflow
+          
           
           self.style.display = 'block';
-          self.scrollTop = 100;
+          self.scrollTop = 0;
 
+          self._adjustDialog();
+
+          self.offsetWidth;// force reflow
           self.classList.add('in');
           self.setAttribute('aria-hidden', false);
+
+          self._enforceFocus();
+
+          var transitionendHandle = function(){
+            self.focus();
+            self.$dialog.removeEventListener('transitionend', transitionendHandle);
+            self.fire('shown');
+          };
+
+          self.$dialog.addEventListener('transitionend', transitionendHandle);
         });
 
       },
@@ -84,30 +97,38 @@
       hide : function(){
         var self = this;
 
+        if(! this.shown) return;
+
         this.shown = false;
 
+        this._escape();
+        this._resize();
+
+        document.removeEventListener('focusin', this._handleFocus);
+
         this.classList.remove('in');
-        
         this.removeEventListener('click', this._clickModal);
         this.removeEventListener('mouseup', this._checkMouseup)
         this.$dialog.removeEventListener('mousedown', this._ignoreBackdrop);
 
         var transitionendHandle = function(e){
           
-          self.hideModal();
+          self._hideModal();
           self.$dialog.removeEventListener('transitionend', transitionendHandle);
         };
 
         this.$dialog.addEventListener('transitionend', transitionendHandle);
       },
 
-      hideModal : function(){
+      _hideModal : function(){
         var self = this;
 
         this.style.display = 'none';
         this._backdrop(function(){
           document.body.classList.remove('modal-open');
+          self._resetAdjustments();
           self._resetScrollbar();
+          self.fire('hidden');
         });
       },
 
@@ -177,13 +198,15 @@
         this.removeEventListener('mouseup',this._checkMouseup);
       },
 
-      _clickModal : function(){
+      _clickModal : function(e){
         if(this.ignoreBackdropClick){
           this.ignoreBackdropClick = false;
           return;
         }
+        
+        if (e.target !== e.currentTarget) return;
 
-        this.hide();
+        this.backdrop == 'static' ? this.focus() : this.hide();
       },
       _measureScrollbar : function () { // thx walsh
         var scrollDiv = document.createElement('div');
@@ -214,16 +237,48 @@
         var self = this;
 
         var escapeHandle = function(e){
-          console.log('test');
-          e.which == 27 && self.hide();
+          e.keyCode == 27 && self.hide();
         }
-
         if (this.shown && this.keyboard) {
           this.addEventListener('keydown',escapeHandle);
         } else if (!this.shown) {
           this.removeEventListener('keydown',escapeHandle);
         }
+      },
+      _resize : function(){
+        if (this.isShown) {
+          window.addEventListener('resize', this._handleUpdate.bind(this));
+        } else {
+          window.removeEventListener('resize', this._handleUpdate);
+        }
+      },
+      _handleUpdate : function(){
+        this._adjustDialog();
+      },
+
+      _adjustDialog : function () {
+        var modalIsOverflowing = this.scrollHeight > document.documentElement.clientHeight
+
+        this.style.paddingLeft = !this.bodyIsOverflowing && modalIsOverflowing ? this.scrollbarWidth : '',
+        this.style.paddingRight = this.bodyIsOverflowing && !modalIsOverflowing ? this.scrollbarWidth : ''
+      },
+
+      _resetAdjustments : function () {
+        this.style.paddingLeft = '';
+        this.style.paddingRight = '';
+      },
+      _enforceFocus : function(){
+        document.removeEventListener('focusin', this._handleFocus);
+        document.addEventListener('focusin', this._handleFocus.bind(this));
+      
+      },
+      
+      _handleFocus : function(e){
+        if(this !== e.target){
+          this.fire('focus');
+        }
       }
+
     });
   </script>
 </dom-module>
