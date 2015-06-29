@@ -21,10 +21,6 @@
     Polymer({
       is: "bs-modal",
       properties : {
-        shown : {
-          type: Boolean,
-          value : false
-        },
         backdrop : {
           type : Boolean,
           value : true
@@ -46,6 +42,7 @@
 
         this.$dialog              = this.$$('.modal-dialog');
         this.$backdrop            = null;
+        this.isShown              = false;
         this.ignoreBackdropClick  = false;
         this.scrollbarWidth       = 0;
         this.originalBodyPad      = null;
@@ -57,7 +54,7 @@
         var self = this;
         this.fire('show');
 
-        this.shown = true;
+        this.isShown = true;
 
         this._checkScrollbar();
         this._setScrollbar();
@@ -97,9 +94,9 @@
       hide : function(){
         var self = this;
 
-        if(! this.shown) return;
+        if(! this.isShown) return;
 
-        this.shown = false;
+        this.isShown = false;
 
         this._escape();
         this._resize();
@@ -133,7 +130,7 @@
       },
 
       toggle : function(){
-        return this.shown ? this.hide() : this.show();
+        return this.isShown ? this.hide() : this.show();
       },
 
       _handleClickClose : function(e){
@@ -145,7 +142,7 @@
       _backdrop : function(callback){
         var self = this;
         var animate = this.classList.contains('fade') ? 'fade' : '';
-        if( this.shown && this.backdrop){
+        if( this.isShown && this.backdrop){
           this.$backdrop = document.createElement('div');
           this.$backdrop.classList.add('modal-backdrop', animate);
           document.body.appendChild(this.$backdrop);
@@ -165,7 +162,7 @@
       
           this.$backdrop.addEventListener('transitionend', showHandle);
          
-        }else if(!this.shown && this.$backdrop){
+        }else if(!this.isShown && this.$backdrop){
           
 
           var hideHandle = function(){
@@ -239,9 +236,9 @@
         var escapeHandle = function(e){
           e.keyCode == 27 && self.hide();
         }
-        if (this.shown && this.keyboard) {
+        if (this.isShown && this.keyboard) {
           this.addEventListener('keydown',escapeHandle);
-        } else if (!this.shown) {
+        } else if (!this.isShown) {
           this.removeEventListener('keydown',escapeHandle);
         }
       },

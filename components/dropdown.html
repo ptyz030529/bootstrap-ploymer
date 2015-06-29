@@ -2,5 +2,17 @@
 
 <dom-module id="bs-dropdown">
   <template>
+  	<a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{label}}<span class="caret"></span></a> 
   </template>
+  <script>
+  	Polymer({
+      is: "bs-dropdown",
+      properties : {
+       	label:String
+      },
+      ready : function(){
+      	this.classList.add('dropdown');
+      }
+    });
+  </script>
 </dom-module>
