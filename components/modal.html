@@ -19,8 +19,12 @@
   <script>
     // element registration
     Polymer({
-      is: "bs-modal",
-      properties : {
+     is: "bs-modal",
+     hostAttributes : {
+      'tabindex' : -1,
+      'aria-hidden' : false
+     },
+     properties : {
         backdrop : {
           type : Boolean,
           value : true
@@ -36,7 +40,6 @@
       },
 
       ready : function(){
-        this.setAttribute('tabindex', -1);
         this.classList.add('modal','fade');
         this.style.display = 'none';
 
@@ -76,7 +79,6 @@
 
           self.offsetWidth;// force reflow
           self.classList.add('in');
-          self.setAttribute('aria-hidden', false);
 
           self._enforceFocus();
 
@@ -267,7 +269,6 @@
       _enforceFocus : function(){
         document.removeEventListener('focusin', this._handleFocus);
         document.addEventListener('focusin', this._handleFocus.bind(this));
-      
       },
       
       _handleFocus : function(e){

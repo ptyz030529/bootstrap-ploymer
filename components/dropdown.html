@@ -2,8 +2,19 @@
 
 <dom-module id="bs-dropdown">
   <template>
-  	<a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{label}}<span class="caret"></span></a> 
+    <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{label}}<span class="caret"></span></span>
+    <div class="dropdown-menu">
+      <content></content>
+    </div>
   </template>
+  <style>
+    :host{
+      --bs-dropdown-label-color: #337ab7;
+    }
+    .dropdown-toggle{
+      color:var(--bs-dropdown-label-color);
+    }
+  </style>
   <script>
   	Polymer({
       is: "bs-dropdown",
@@ -11,7 +22,86 @@
        	label:String
       },
       ready : function(){
-      	this.classList.add('dropdown');
+        this.classList.add('dropdown');
+
+        this.$backdrop = null;
+
+        this.$toggle = this.$$('.dropdown-toggle');
+        this.$toggle.addEventListener('click', this.toggle.bind(this));
+
+        document.addEventListener('click', this._clearMenus.bind(this));
+        this.addEventListener('click', function(e){
+          e.stopPropagation();
+        });
+      },
+      toggle : function(){
+        var isActive = this.classList.contains('open');
+
+        this._clearMenus();
+        // if(!isActive){
+        //   if('ontouchstart' in document.documentElement)
+        // }
+        //
+        this.$toggle.focus();
+        this.$toggle.setAttribute('aria-expanded', 'true');
+
+        if(!isActive){
+          this.classList.add('open');
+        }else{
+          this.classList.remove('open');
+        }
+      },
+      _clearMenus : function(e){
+        console.log('aaa');
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="bs-dropdown-item">
+  <template>
+    <content></content>
+  </template>
+  <style>
+    :host{
+      display:block;
+      cursor:pointer;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      white-space: nowrap;
+    }
+    :host:hover,
+    :host:focus{
+      color: #262626;
+      text-decoration: none;
+      background-color: #f5f5f5;
+    }
+  </style>
+  <script>
+  	Polymer({
+      is: "bs-dropdown-item"
+    });
+  </script>
+</dom-module>
+
+<dom-module id="bs-dropdown-separator">
+  <template>
+    <content></content>
+  </template>
+  <style>
+    :host{
+      display:block;
+    }  
+  </style>
+  <script>
+  	Polymer({
+      is: "bs-dropdown-separator",
+      ready : function(){
+        this.classList.add('divider');
+        this.setAttribute('role','separator');
       }
     });
   </script>
